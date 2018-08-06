@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D583493D21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D583493B21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib */; };
+		D583493E21187B6D00F76BBE /* libsrbdl.2.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D583493C21187B6D00F76BBE /* libsrbdl.2.6.0.dylib */; };
 		D5C44CAD2115347300099365 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5C44CAC2115347300099365 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +25,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D583493B21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsrbdl_urdfreader.2.6.0.dylib; path = ../../../../../../usr/local/lib/libsrbdl_urdfreader.2.6.0.dylib; sourceTree = "<group>"; };
+		D583493C21187B6D00F76BBE /* libsrbdl.2.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsrbdl.2.6.0.dylib; path = ../../../../../../usr/local/lib/libsrbdl.2.6.0.dylib; sourceTree = "<group>"; };
+		D583494021188E2100F76BBE /* test2L.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = test2L.urdf; sourceTree = "<group>"; };
+		D583494121188E2100F76BBE /* y_dummy.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = y_dummy.urdf; sourceTree = "<group>"; };
+		D583494221188E2100F76BBE /* test1L.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = test1L.urdf; sourceTree = "<group>"; };
+		D583494321188E2100F76BBE /* rosemarie.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = rosemarie.urdf; sourceTree = "<group>"; };
+		D583494421188E2100F76BBE /* dummy.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = dummy.urdf; sourceTree = "<group>"; };
+		D583494521188E2100F76BBE /* kuka_kr210.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = kuka_kr210.urdf; sourceTree = "<group>"; };
 		D5C44CA92115347300099365 /* urdf2eom */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = urdf2eom; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C44CAC2115347300099365 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -32,17 +42,43 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D583493D21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib in Frameworks */,
+				D583493E21187B6D00F76BBE /* libsrbdl.2.6.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D583491A211878A600F76BBE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D583493B21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib */,
+				D583493C21187B6D00F76BBE /* libsrbdl.2.6.0.dylib */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D583493F21188E2100F76BBE /* URDFs */ = {
+			isa = PBXGroup;
+			children = (
+				D583494021188E2100F76BBE /* test2L.urdf */,
+				D583494121188E2100F76BBE /* y_dummy.urdf */,
+				D583494221188E2100F76BBE /* test1L.urdf */,
+				D583494321188E2100F76BBE /* rosemarie.urdf */,
+				D583494421188E2100F76BBE /* dummy.urdf */,
+				D583494521188E2100F76BBE /* kuka_kr210.urdf */,
+			);
+			path = URDFs;
+			sourceTree = "<group>";
+		};
 		D5C44CA02115347300099365 = {
 			isa = PBXGroup;
 			children = (
-				D5C44CAB2115347300099365 /* urdf2eom */,
+				D5C44CAC2115347300099365 /* main.cpp */,
 				D5C44CAA2115347300099365 /* Products */,
+				D583491A211878A600F76BBE /* Frameworks */,
+				D583493F21188E2100F76BBE /* URDFs */,
 			);
 			sourceTree = "<group>";
 		};
@@ -52,14 +88,6 @@
 				D5C44CA92115347300099365 /* urdf2eom */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		D5C44CAB2115347300099365 /* urdf2eom */ = {
-			isa = PBXGroup;
-			children = (
-				D5C44CAC2115347300099365 /* main.cpp */,
-			);
-			path = urdf2eom;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -233,6 +261,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					/usr/local/lib/srbdl,
+					/usr/local/lib/urdfreader,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -241,6 +275,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = /usr/local/include;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					/usr/local/lib/srbdl,
+					/usr/local/lib/urdfreader,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
