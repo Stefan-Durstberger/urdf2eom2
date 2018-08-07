@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D583493D21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D583493B21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib */; };
-		D583493E21187B6D00F76BBE /* libsrbdl.2.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D583493C21187B6D00F76BBE /* libsrbdl.2.6.0.dylib */; };
+		D5834948211890D700F76BBE /* SymbolicForwardDynamics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5834946211890D700F76BBE /* SymbolicForwardDynamics.cpp */; };
+		D58349492118971C00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D583493B21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib */; };
+		D583494A2118971C00F76BBE /* libsrbdl.2.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D583493C21187B6D00F76BBE /* libsrbdl.2.6.0.dylib */; };
 		D5C44CAD2115347300099365 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5C44CAC2115347300099365 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +34,8 @@
 		D583494321188E2100F76BBE /* rosemarie.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = rosemarie.urdf; sourceTree = "<group>"; };
 		D583494421188E2100F76BBE /* dummy.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = dummy.urdf; sourceTree = "<group>"; };
 		D583494521188E2100F76BBE /* kuka_kr210.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = kuka_kr210.urdf; sourceTree = "<group>"; };
+		D5834946211890D700F76BBE /* SymbolicForwardDynamics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolicForwardDynamics.cpp; sourceTree = "<group>"; };
+		D5834947211890D700F76BBE /* SymbolicForwardDynamics.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SymbolicForwardDynamics.hpp; sourceTree = "<group>"; };
 		D5C44CA92115347300099365 /* urdf2eom */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = urdf2eom; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5C44CAC2115347300099365 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -42,8 +45,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D583493D21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib in Frameworks */,
-				D583493E21187B6D00F76BBE /* libsrbdl.2.6.0.dylib in Frameworks */,
+				D58349492118971C00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib in Frameworks */,
+				D583494A2118971C00F76BBE /* libsrbdl.2.6.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,6 +79,8 @@
 			isa = PBXGroup;
 			children = (
 				D5C44CAC2115347300099365 /* main.cpp */,
+				D5834946211890D700F76BBE /* SymbolicForwardDynamics.cpp */,
+				D5834947211890D700F76BBE /* SymbolicForwardDynamics.hpp */,
 				D5C44CAA2115347300099365 /* Products */,
 				D583491A211878A600F76BBE /* Frameworks */,
 				D583493F21188E2100F76BBE /* URDFs */,
@@ -148,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D5C44CAD2115347300099365 /* main.cpp in Sources */,
+				D5834948211890D700F76BBE /* SymbolicForwardDynamics.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,11 +268,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = /usr/local/include;
-				LIBRARY_SEARCH_PATHS = (
-					/usr/local/lib,
-					/usr/local/lib/srbdl,
-					/usr/local/lib/urdfreader,
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -276,11 +278,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				HEADER_SEARCH_PATHS = /usr/local/include;
-				LIBRARY_SEARCH_PATHS = (
-					/usr/local/lib,
-					/usr/local/lib/srbdl,
-					/usr/local/lib/urdfreader,
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
