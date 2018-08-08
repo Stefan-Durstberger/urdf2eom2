@@ -34,23 +34,49 @@ int main (int argc, char* argv[]) {
 	#endif
 	
 	// Symbolic Forward Dynamics
-	Model* model = new Model();
+	Model* model1 = new Model();
 
 	if ( argc <= 1 ) {
 		std::cerr << "No input argument" << std::endl;
 		abort();
 	}
 	
-	if (!Addons::URDFReadFromFile (argv[1], model, false)) {
-		std::cerr << "Error loading model ./samplemodel.urdf" << std::endl;
+	if (!Addons::URDFReadFromFile (argv[1], model1, false)) {
+		std::cerr << "Error loading model" << std::endl;
 		abort();
 	}
 
-	std::cout << "Degree of freedom: " << model->dof_count << std::endl;
+	//std::cout << "Degree of freedom: " << model->dof_count << std::endl;
 	
-	SymbolicForwardDynamics(*model);
+	SymbolicForwardDynamics(*model1);
 	
-	delete model;
+	
+	
+	
+	
+	
+	// Symbolic Forward Dynamics
+	Model* model2 = new Model();
+	
+	if ( argc <= 1 ) {
+		std::cerr << "No input argument" << std::endl;
+		abort();
+	}
+	
+	if (!Addons::URDFReadFromFile (argv[1], model2, false)) {
+		std::cerr << "Error loading model" << std::endl;
+		abort();
+	}
+	
+	VectorNd Q = VectorNd::Ones (model2->dof_count);
+	VectorNd QDot = VectorNd::Ones (model2->dof_count);
+	VectorNd Tau = VectorNd::Ones (model2->dof_count);
+	VectorNd QDDot = VectorNd::Ones (model2->dof_count);
+	
+	ForwardDynamics (*model2, Q, QDot, Tau, QDDot);
+	
+	delete model1;
+	delete model2;
 	
 	#ifdef SRBDL_MEASURE_TIME
 	// Record end time

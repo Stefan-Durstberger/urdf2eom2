@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D5252117211A697E004D8C7E /* SymbolicMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5252115211A697E004D8C7E /* SymbolicMath.cpp */; };
 		D5834948211890D700F76BBE /* SymbolicForwardDynamics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5834946211890D700F76BBE /* SymbolicForwardDynamics.cpp */; };
 		D58349492118971C00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D583493B21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib */; };
 		D583494A2118971C00F76BBE /* libsrbdl.2.6.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D583493C21187B6D00F76BBE /* libsrbdl.2.6.0.dylib */; };
@@ -26,6 +27,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D5252115211A697E004D8C7E /* SymbolicMath.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolicMath.cpp; sourceTree = "<group>"; };
+		D5252116211A697E004D8C7E /* SymbolicMath.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SymbolicMath.hpp; sourceTree = "<group>"; };
 		D583493B21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsrbdl_urdfreader.2.6.0.dylib; path = ../../../../../../usr/local/lib/libsrbdl_urdfreader.2.6.0.dylib; sourceTree = "<group>"; };
 		D583493C21187B6D00F76BBE /* libsrbdl.2.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsrbdl.2.6.0.dylib; path = ../../../../../../usr/local/lib/libsrbdl.2.6.0.dylib; sourceTree = "<group>"; };
 		D583494021188E2100F76BBE /* test2L.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = test2L.urdf; sourceTree = "<group>"; };
@@ -81,6 +84,8 @@
 				D5C44CAC2115347300099365 /* main.cpp */,
 				D5834946211890D700F76BBE /* SymbolicForwardDynamics.cpp */,
 				D5834947211890D700F76BBE /* SymbolicForwardDynamics.hpp */,
+				D5252115211A697E004D8C7E /* SymbolicMath.cpp */,
+				D5252116211A697E004D8C7E /* SymbolicMath.hpp */,
 				D5C44CAA2115347300099365 /* Products */,
 				D583491A211878A600F76BBE /* Frameworks */,
 				D583493F21188E2100F76BBE /* URDFs */,
@@ -154,6 +159,7 @@
 			files = (
 				D5C44CAD2115347300099365 /* main.cpp in Sources */,
 				D5834948211890D700F76BBE /* SymbolicForwardDynamics.cpp in Sources */,
+				D5252117211A697E004D8C7E /* SymbolicMath.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
