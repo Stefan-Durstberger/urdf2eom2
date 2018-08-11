@@ -28,9 +28,12 @@
 #include "symbolicc++/symbolicc++.h"
 
 #include "SymbolicMath.hpp"
+#include "SymbolicDataTypes.hpp"
+#include "HelperFunctions.hpp"
 
 using namespace SymbolicRigidBodyDynamics;
 using namespace SymbolicMath;
+using namespace SymbolicDataTypes;
 using namespace std;
 
 
@@ -90,9 +93,9 @@ std::vector<SymSpatialVector> sym_pA;
 /// \brief Temporary variable U_i (RBDA p. 130)
 std::vector<SymSpatialVector> sym_U;
 /// \brief Temporary variable D_i (RBDA p. 130)
-Symbolic d;
+std::vector<Symbolic> sym_d;
 /// \brief Temporary variable u (RBDA p. 130)
-Symbolic u;
+std::vector<Symbolic> sym_u;
 /// \brief Internal forces on the body (used only InverseDynamics())
 //std::vector<Math::SpatialVector> f;
 /// \brief The spatial inertia of body i (used only in
@@ -117,7 +120,6 @@ std::vector<SymSpatialMatrix> IA;
 
 /// \brief All bodies that are attached to a body via a fixed joint.
 //std::vector<FixedBody> mFixedBodies;
-
 
 static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatialVector> *f_ext ) {
 	
@@ -146,17 +148,6 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 		sym_I.emplace_back(sym_copy_rbi);
 	}
 	
-//	clog << model.X_J.size() << endl;
-//	clog << model.X_lambda.size() << endl;
-//	clog << model.X_base.size()  << endl;
-//	clog << model.v.size()  << endl;
-//	clog << model.c_J.size()  << endl;
-//	clog << model.c.size()  << endl;
-//	clog << model.IA.size()  << endl;
-//	clog << model.pA.size()  << endl;
-//	clog << model.U.size()  << endl;
-//	cout << "dof = " << model.dof_count << endl;
-	
 	for (unsigned int i = 0; i < model.dof_count + 1; i++) {
 		sym_X_J.push_back 		(SymSpatialTransform());
 		sym_X_lambda.push_back	(SymSpatialTransform());
@@ -170,7 +161,23 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 		//sym_Ic.push_back		(symSRBIZero);
 	}
 	
-	//clog << symSpatialVectorZero.v << endl;
+	for (unsigned int i = 0; i < model.mBodies.size(); i++) {
+		sym_u.push_back(symZero);
+		sym_d.push_back(symZero);
+	}
+	
+	Symbolic Tau("tau", model.dof_count);
+	
+//	clog << model.X_J.size() << endl;
+//	clog << model.X_lambda.size() << endl;
+//	clog << model.X_base.size()  << endl;
+//	clog << model.v.size()  << endl;
+//	clog << model.c_J.size()  << endl;
+//	clog << model.c.size()  << endl;
+//	clog << model.IA.size()  << endl;
+//	clog << model.pA.size()  << endl;
+//	clog << model.U.size()  << endl;
+//	cout << "dof = " << model.dof_count << endl;
 	
 	Math::SpatialVector spatial_gravity (0., 0., 0., model.gravity[0], model.gravity[1], model.gravity[2]);
 	
@@ -208,12 +215,9 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 //	clog << endl;
 //	// Test SymSpatialTransform.apply
 	
+	/* FIRST LOOP */
 	for (i = 1; i < model.mBodies.size(); i++) {
-		// START_TIMING 1
-		auto start1 = std::chrono::high_resolution_clock::now();
-		// START_TIMING 1
-		
-		clog << "i = " << i << endl;
+		clog << "[LOOP 1] Iteration "<< i << "/" << model.mBodies.size() - 1 << endl << endl;
 		
 		unsigned int lambda = model.lambda[i];
 		
@@ -240,11 +244,11 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 		
 //		clog << "sym_c[" << i << "].v = " << sym_c[i].v << endl;
 		
-		sym_I[i].setSpatialMatrix (sym_IA[i].M);
+		sym_I[i].setSpatialMatrix (sym_IA[i]);
 		
 		//clog << "sym_c[" << i << "].v = " << sym_c[i].v << endl;
 
-		sym_pA[i] = crossf(sym_v[i].v,sym_I[i] * sym_v[i]);
+		sym_pA[i] = crossf(sym_v[i],sym_I[i] * sym_v[i]);
 		
 		if (f_ext != NULL && (*f_ext)[i] != symSpatialVectorZero) {
 			clog << "External force (" << i << ") = " << sym_X_base[i].toMatrixAdjoint() * (*f_ext)[i] << std::endl;
@@ -252,149 +256,75 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 		}
 		
 		//std::clog << "sym_pA[" << i << "].v = " << sym_pA[i].v << std::endl;
-		
-		// END_TIMING 1
-		auto finish1 = std::chrono::high_resolution_clock::now();
-		std::chrono::duration<double> elapsed1 = finish1 - start1;
-		std::clog << "[TIME 1] Time elapsed = "<< elapsed1.count() << std::endl;
-		// END_TIMING 1
-	}
+	} /* FIRST LOOP */
 	
-//	for (i = static_cast<unsigned int>(model.mBodies.size()) - 1; i > 0; i--) {
-//		unsigned int q_index = model.mJoints[i].q_index;
-//
-//		if (model.mJoints[i].mDoFCount == 1
-//			&& model.mJoints[i].mJointType != JointTypeCustom) {
-//
-//			sym_U[i] = sym_IA[i] * sym_S[i];
-//			model.d[i] = model.S[i].dot(model.U[i]);
-//			model.u[i] = Tau[q_index] - model.S[i].dot(model.pA[i]);
-//			//      LOG << "u[" << i << "] = " << model.u[i] << std::endl;
-//
-//			unsigned int lambda = model.lambda[i];
-//			if (lambda != 0) {
-//				SpatialMatrix Ia =    model.IA[i]
-//				- model.U[i]
-//				* (model.U[i] / model.d[i]).transpose();
-//
-//				SpatialVector pa =  model.pA[i]
-//				+ Ia * model.c[i]
-//				+ model.U[i] * model.u[i] / model.d[i];
-//
-//#ifdef EIGEN_CORE_H
-//				model.IA[lambda].noalias()
-//				+= model.X_lambda[i].toMatrixTranspose()
-//				* Ia * model.X_lambda[i].toMatrix();
-//				model.pA[lambda].noalias()
-//				+= model.X_lambda[i].applyTranspose(pa);
-//#else
-//				model.IA[lambda]
-//				+= model.X_lambda[i].toMatrixTranspose()
-//				* Ia * model.X_lambda[i].toMatrix();
-//
-//				model.pA[lambda] += model.X_lambda[i].applyTranspose(pa);
-//#endif
-//				LOG << "pA[" << lambda << "] = "
-//				<< model.pA[lambda].transpose() << std::endl;
-//			}
-//		} else if (model.mJoints[i].mDoFCount == 3
-//				   && model.mJoints[i].mJointType != JointTypeCustom) {
-//			model.multdof3_U[i] = model.IA[i] * model.multdof3_S[i];
-//#ifdef EIGEN_CORE_H
-//			model.multdof3_Dinv[i] = (model.multdof3_S[i].transpose()
-//									  * model.multdof3_U[i]).inverse().eval();
-//#else
-//			model.multdof3_Dinv[i] = (model.multdof3_S[i].transpose()
-//									  * model.multdof3_U[i]).inverse();
-//#endif
-//			Vector3d tau_temp(Tau.block(q_index,0,3,1));
-//			model.multdof3_u[i] = tau_temp
-//			- model.multdof3_S[i].transpose() * model.pA[i];
-//
-//			// LOG << "multdof3_u[" << i << "] = "
-//			//                      << model.multdof3_u[i].transpose() << std::endl;
-//			unsigned int lambda = model.lambda[i];
-//			if (lambda != 0) {
-//				SpatialMatrix Ia = model.IA[i]
-//				- model.multdof3_U[i]
-//				* model.multdof3_Dinv[i]
-//				* model.multdof3_U[i].transpose();
-//				SpatialVector pa = model.pA[i]
-//				+ Ia
-//				* model.c[i]
-//				+ model.multdof3_U[i]
-//				* model.multdof3_Dinv[i]
-//				* model.multdof3_u[i];
-//#ifdef EIGEN_CORE_H
-//				model.IA[lambda].noalias()
-//				+= model.X_lambda[i].toMatrixTranspose()
-//				* Ia
-//				* model.X_lambda[i].toMatrix();
-//
-//				model.pA[lambda].noalias()
-//				+= model.X_lambda[i].applyTranspose(pa);
-//#else
-//				model.IA[lambda]
-//				+= model.X_lambda[i].toMatrixTranspose()
-//				* Ia
-//				* model.X_lambda[i].toMatrix();
-//
-//				model.pA[lambda] += model.X_lambda[i].applyTranspose(pa);
-//#endif
-//				LOG << "pA[" << lambda << "] = "
-//				<< model.pA[lambda].transpose()
-//				<< std::endl;
-//			}
-//		} else if (model.mJoints[i].mJointType == JointTypeCustom) {
-//			unsigned int kI   = model.mJoints[i].custom_joint_index;
-//			unsigned int dofI = model.mCustomJoints[kI]->mDoFCount;
-//			model.mCustomJoints[kI]->U =
-//			model.IA[i] * model.mCustomJoints[kI]->S;
-//
-//#ifdef EIGEN_CORE_H
-//			model.mCustomJoints[kI]->Dinv
-//			= (model.mCustomJoints[kI]->S.transpose()
-//			   * model.mCustomJoints[kI]->U).inverse().eval();
-//#else
-//			model.mCustomJoints[kI]->Dinv
-//			= (model.mCustomJoints[kI]->S.transpose()
-//			   * model.mCustomJoints[kI]->U).inverse();
-//#endif
-//			VectorNd tau_temp(Tau.block(q_index,0,dofI,1));
-//			model.mCustomJoints[kI]->u = tau_temp
-//			- model.mCustomJoints[kI]->S.transpose() * model.pA[i];
-//
-//			//      LOG << "multdof3_u[" << i << "] = "
-//			//      << model.multdof3_u[i].transpose() << std::endl;
-//			unsigned int lambda = model.lambda[i];
-//			if (lambda != 0) {
-//				SpatialMatrix Ia = model.IA[i]
-//				- (model.mCustomJoints[kI]->U
-//				   * model.mCustomJoints[kI]->Dinv
-//				   * model.mCustomJoints[kI]->U.transpose());
-//				SpatialVector pa =  model.pA[i]
-//				+ Ia * model.c[i]
-//				+ (model.mCustomJoints[kI]->U
-//				   * model.mCustomJoints[kI]->Dinv
-//				   * model.mCustomJoints[kI]->u);
-//
-//#ifdef EIGEN_CORE_H
-//				model.IA[lambda].noalias() += model.X_lambda[i].toMatrixTranspose()
-//				* Ia
-//				* model.X_lambda[i].toMatrix();
-//				model.pA[lambda].noalias() += model.X_lambda[i].applyTranspose(pa);
-//#else
-//				model.IA[lambda] += model.X_lambda[i].toMatrixTranspose()
-//				* Ia
-//				* model.X_lambda[i].toMatrix();
-//				model.pA[lambda] += model.X_lambda[i].applyTranspose(pa);
-//#endif
-//				LOG << "pA[" << lambda << "] = "
-//				<< model.pA[lambda].transpose()
-//				<< std::endl;
-//			}
-//		}
-//	}
+	cout << "sym_pA[" << i - 1 << "] = " << sym_pA[i-1].v << endl;
+	
+	/* SECOND LOOP */
+	for (i = static_cast<unsigned int>(model.mBodies.size()) - 1; i > 0; i--) {
+		clog << "[LOOP 2] Iteration "<< model.mBodies.size() - i << "/" << model.mBodies.size() - 1 << endl << endl;
+		unsigned int q_index = model.mJoints[i].q_index;
+		
+		Timer timer1; timer1.start();
+		
+		if (model.mJoints[i].mDoFCount == 1
+			&& model.mJoints[i].mJointType != JointTypeCustom) {
+			
+			clog << "sym_IA[" << i << "] = " << sym_IA[i].M << std::endl;
+			clog << "sym_S[" << i << "] = " << sym_S[i].v << std::endl;
+
+			sym_U[i] = sym_IA[i] * sym_S[i];
+			
+			clog << "sym_U[" << i << "] = " << sym_U[i].v << std::endl;
+			
+			sym_d[i] = sym_S[i].dot(sym_U[i]);
+			sym_u[i] = Tau(q_index) - sym_S[i].dot(sym_pA[i]);
+			
+			clog << "sym_d(" << i << ") = " << sym_d[i] << endl << endl;
+			clog << "sym_u(" << i << ") = " << sym_u[i] << endl << endl;
+
+			unsigned int lambda = model.lambda[i];
+			if (lambda != 0) {
+				
+				clog << "tmp1 = " <<
+				((sym_U[i].v / sym_d[i])) << endl;
+				clog << "tmp1 = " <<
+				((sym_U[i].v / sym_d[i])) << endl;
+				clog << "tmp2 = " <<
+				((sym_U[i].v / sym_d[i]).transpose()) << endl;
+				clog << "tmp3 = " <<
+				sym_U[i].v.transpose() * (sym_U[i] / sym_d[i]).v << endl;
+				
+				SymSpatialMatrix Ia =    sym_IA[i].M
+				- (sym_U[i].v.transpose()
+				* (sym_U[i] / sym_d[i]).v);
+
+				SymSpatialVector pa =  sym_pA[i]
+				+ Ia * sym_c[i]
+				+ sym_U[i] * sym_u[i] / sym_d[i];
+				
+				clog << "Ia = " << Ia.M << endl;
+				clog << "pa = " << pa.v << endl;
+				
+				SymSpatialMatrix tmp = sym_X_lambda[i].toMatrixTranspose();
+				cout << sym_X_lambda[i].E << endl;
+				cout << sym_X_lambda[i].r << endl;
+				//cout << tmp.M << endl;
+				
+				sym_IA[lambda]
+				+= sym_X_lambda[i].toMatrixTranspose()
+				* (Ia * sym_X_lambda[i].toMatrix());
+
+				sym_pA[lambda] += sym_X_lambda[i].applyTranspose(pa);
+
+				clog << "pA[" << lambda << "] = "
+				<< sym_pA[lambda] << std::endl;
+				
+				timer1.stop();
+			}
+
+		} /* if (model.mJoints[i].mDoFCount == 1 */
+	} /* SECOND LOOP */
 }
 
 

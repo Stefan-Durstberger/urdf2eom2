@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #include <iostream>
-#include <chrono>  // for high_resolution_clock
 
 #include <srbdl.h>
 #include <srbdl/addons/urdfreader/urdfreader.h>
@@ -15,23 +14,20 @@
 
 #include "SymbolicForwardDynamics.hpp"
 
+#include "HelperFunctions.hpp"
+
 
 #ifndef SRBDL_BUILD_ADDON_URDFREADER
 	#error "Error: SRBDL addon URDFReader not enabled."
 #endif
-
-#define SRBDL_MEASURE_TIME
-
 
 using namespace SymbolicRigidBodyDynamics;
 using namespace SymbolicRigidBodyDynamics::Math;
 
 int main (int argc, char* argv[]) {
 	
-	#ifdef SRBDL_MEASURE_TIME
 	// Record start time
-	auto start = std::chrono::high_resolution_clock::now();
-	#endif
+	Timer timer; timer.start();
 	
 	// Symbolic Forward Dynamics
 	Model* model1 = new Model();
@@ -50,12 +46,10 @@ int main (int argc, char* argv[]) {
 	
 	SymbolicForwardDynamics(*model1);
 	
-	
-	
-	
-	
+	timer.lap();
 	
 	// Symbolic Forward Dynamics
+	cout << "[EVALUATED MODEL]" << endl;
 	Model* model2 = new Model();
 	
 	if ( argc <= 1 ) {
@@ -78,12 +72,8 @@ int main (int argc, char* argv[]) {
 	delete model1;
 	delete model2;
 	
-	#ifdef SRBDL_MEASURE_TIME
 	// Record end time
-	auto finish = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> elapsed = finish - start;
-	std::cout << "Time elapsed = "<< elapsed.count() << std::endl;
-	#endif
+	timer.stop();
 	
 	return 0;
 }

@@ -1,5 +1,5 @@
 //
-//  SymbolicMathUtil.cpp
+//  SymbolicMath.cpp
 //  urdf2eom
 //
 //  Created by Stefan on 08.08.18.
