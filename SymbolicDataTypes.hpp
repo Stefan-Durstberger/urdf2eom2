@@ -164,8 +164,8 @@ struct SymSpatialRigidBodyInertia {
 	
 	Symbolic cross( const Symbolic &v1, const Symbolic &v2) {
 		return Symbolic (list<Symbolic> {v1(1) * v2(2) - v1(2) * v2(1),
-			v1(2) * v2(0) - v1(0) * v2(2),
-			v1(0) * v2(1) - v1(1) * v2(0)});
+										 v1(2) * v2(0) - v1(0) * v2(2),
+										 v1(0) * v2(1) - v1(1) * v2(0)});
 	};
 	
 	//	SpatialRigidBodyInertia operator+ (const SpatialRigidBodyInertia &rbi) {
@@ -275,16 +275,14 @@ struct SymSpatialTransform {
 	 * \returns (E * w, - E * rxw + E * v)
 	 */
 	SymSpatialVector apply (const SymSpatialVector &v_sp) {
-		//		clog << "r = " << r << endl;
-		//		clog << "v_sp.v = " << v_sp.v << endl;
-		
+//				clog << "r = " << r << endl;
+//				clog << "v_sp.v = " << v_sp.v << endl;
 		Symbolic v_rxw (list<Symbolic> {
 			(v_sp.v(3) - r(1)*v_sp.v(2) + r(2)*v_sp.v(1)),
 			(v_sp.v(4) - r(2)*v_sp.v(0) + r(0)*v_sp.v(2)),
 			(v_sp.v(5) - r(0)*v_sp.v(1) + r(1)*v_sp.v(0))
 		});
 		//		clog << "v_rxw = " << v_rxw << endl;
-		
 		return SymSpatialVector (Symbolic (list<Symbolic>{
 			(E(0,0) * v_sp.v(0) + E(0,1) * v_sp.v(1) + E(0,2) * v_sp.v(2)),
 			(E(1,0) * v_sp.v(0) + E(1,1) * v_sp.v(1) + E(1,2) * v_sp.v(2)),
@@ -314,25 +312,22 @@ struct SymSpatialTransform {
 							E_T_f [2]}));
 	};
 	
-	/** Same as X^* I X^{-1}
-	 */
-	//	SpatialRigidBodyInertia apply (const SpatialRigidBodyInertia &rbi) {
-	//		return SpatialRigidBodyInertia (
-	//										rbi.m,
-	//										E * (rbi.h - rbi.m * r),
-	//										E *
-	//										(
-	//										 Matrix3d (
-	//												   rbi.Ixx, rbi.Iyx, rbi.Izx,
-	//												   rbi.Iyx, rbi.Iyy, rbi.Izy,
-	//												   rbi.Izx, rbi.Izy, rbi.Izz
-	//												   )
-	//										 + VectorCrossMatrix (r) * VectorCrossMatrix (rbi.h)
-	//										 + (VectorCrossMatrix(rbi.h - rbi.m * r) * VectorCrossMatrix (r))
-	//										 )
-	//										* E.transpose()
-	//										);
-	//	};
+//	/** Same as X^* I X^{-1}
+//	 */
+//	SymSpatialRigidBodyInertia apply (const SymSpatialRigidBodyInertia &rbi) {
+//		return SymSpatialRigidBodyInertia (
+//										rbi.m,
+//										E * (rbi.h - rbi.m * r),
+//										E * (Symbolic (list<list<Symbolic>> {
+//											{rbi.Ixx, rbi.Iyx, rbi.Izx},
+//											{rbi.Iyx, rbi.Iyy, rbi.Izy},
+//											{rbi.Izx, rbi.Izy, rbi.Izz}})
+//										+ SymVectorCrossMatrix (r) * SymVectorCrossMatrix (rbi.h)
+//										+ (SymVectorCrossMatrix(rbi.h - rbi.m * r) * SymVectorCrossMatrix (r))
+//										 )
+//										* E.transpose()
+//										);
+//	};
 	
 	/** Same as X^T I X
 	 */
@@ -423,7 +418,7 @@ struct SymSpatialTransform {
 			{symZero, -r(2), r(1)},
 			{r(2), symZero, -r(0)},
 			{-r(1), r(0), symZero}});
-		cout << _Erx << endl;
+//		cout << "_Erx = " << _Erx << endl;
 		SymSpatialMatrix result;
 		// left top = E.transpose()
 		for (unsigned int i = 0; i < 3; i++)

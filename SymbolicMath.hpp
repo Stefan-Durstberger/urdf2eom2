@@ -57,10 +57,6 @@ inline SymSpatialTransform SymXrotx (const Symbolic &xrot) {
 				  (symZero,  c,     s ),
 				  (symZero,  -s,    c ));
 	Symbolic v = (  symZero,  symZero,  symZero);
-	//	SymSpatialTransform tmp = SymSpatialTransform(M, v);
-	//	std::cout << tmp.E << std::endl;
-	//	std::cout << tmp.r << std::endl;
-	
 	return SymSpatialTransform ( M, v.transpose() );
 }
 
@@ -75,11 +71,7 @@ inline SymSpatialTransform SymXroty (const Symbolic &xrot) {
 				  (symZero,  symOne,   symZero ),
 				  (s,         symZero,  c ));
 	Symbolic v = (  symZero,  symZero,  symZero);
-	//	SymSpatialTransform tmp = SymSpatialTransform(M, v);
-	//	std::cout << tmp.E << std::endl;
-	//	std::cout << tmp.r << std::endl;
-	
-	return SymSpatialTransform ( M, v.transpose() );
+return SymSpatialTransform ( M, v.transpose() );
 }
 
 
@@ -93,11 +85,7 @@ inline SymSpatialTransform SymXrotz (const Symbolic &xrot) {
 				  (-s,    c,     symZero ),
 				  (symZero,  symZero,  symOne ));
 	Symbolic v = (  symZero,  symZero,  symZero);
-	//	SymSpatialTransform tmp = SymSpatialTransform(M, v);
-	//	std::cout << tmp.E << std::endl;
-	//	std::cout << tmp.r << std::endl;
-	
-	return SymSpatialTransform ( M, v.transpose() );
+return SymSpatialTransform ( M, v.transpose() );
 }
 
 

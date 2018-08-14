@@ -35,13 +35,16 @@
 		D56022C2211B5437001A9D4D /* HelperFunctions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HelperFunctions.hpp; sourceTree = "<group>"; };
 		D56022C4211B8178001A9D4D /* SymbolicMath.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolicMath.cpp; sourceTree = "<group>"; };
 		D56022C5211B8178001A9D4D /* SymbolicMath.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SymbolicMath.hpp; sourceTree = "<group>"; };
+		D56022CD211F6D41001A9D4D /* test3L.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = test3L.urdf; sourceTree = "<group>"; };
+		D56022CE211F6D42001A9D4D /* test2L.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = test2L.urdf; sourceTree = "<group>"; };
+		D56022CF211F6D42001A9D4D /* test4L.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = test4L.urdf; sourceTree = "<group>"; };
+		D56022D0211F6D42001A9D4D /* test1L.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = test1L.urdf; sourceTree = "<group>"; };
+		D56022D1211F6D54001A9D4D /* dummy.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = dummy.urdf; sourceTree = "<group>"; };
 		D583493B21187B6D00F76BBE /* libsrbdl_urdfreader.2.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsrbdl_urdfreader.2.6.0.dylib; path = ../../../../../../usr/local/lib/libsrbdl_urdfreader.2.6.0.dylib; sourceTree = "<group>"; };
 		D583493C21187B6D00F76BBE /* libsrbdl.2.6.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsrbdl.2.6.0.dylib; path = ../../../../../../usr/local/lib/libsrbdl.2.6.0.dylib; sourceTree = "<group>"; };
 		D583494021188E2100F76BBE /* test2L.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = test2L.urdf; sourceTree = "<group>"; };
 		D583494121188E2100F76BBE /* y_dummy.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = y_dummy.urdf; sourceTree = "<group>"; };
-		D583494221188E2100F76BBE /* test1L.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = test1L.urdf; sourceTree = "<group>"; };
 		D583494321188E2100F76BBE /* rosemarie.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = rosemarie.urdf; sourceTree = "<group>"; };
-		D583494421188E2100F76BBE /* dummy.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = dummy.urdf; sourceTree = "<group>"; };
 		D583494521188E2100F76BBE /* kuka_kr210.urdf */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = kuka_kr210.urdf; sourceTree = "<group>"; };
 		D5834946211890D700F76BBE /* SymbolicForwardDynamics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SymbolicForwardDynamics.cpp; sourceTree = "<group>"; };
 		D5834947211890D700F76BBE /* SymbolicForwardDynamics.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SymbolicForwardDynamics.hpp; sourceTree = "<group>"; };
@@ -74,11 +77,14 @@
 		D583493F21188E2100F76BBE /* URDFs */ = {
 			isa = PBXGroup;
 			children = (
+				D56022D0211F6D42001A9D4D /* test1L.urdf */,
 				D583494021188E2100F76BBE /* test2L.urdf */,
+				D56022CE211F6D42001A9D4D /* test2L.urdf */,
+				D56022CD211F6D41001A9D4D /* test3L.urdf */,
+				D56022CF211F6D42001A9D4D /* test4L.urdf */,
+				D56022D1211F6D54001A9D4D /* dummy.urdf */,
 				D583494121188E2100F76BBE /* y_dummy.urdf */,
-				D583494221188E2100F76BBE /* test1L.urdf */,
 				D583494321188E2100F76BBE /* rosemarie.urdf */,
-				D583494421188E2100F76BBE /* dummy.urdf */,
 				D583494521188E2100F76BBE /* kuka_kr210.urdf */,
 			);
 			path = URDFs;

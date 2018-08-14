@@ -69,6 +69,8 @@ int main (int argc, char* argv[]) {
 	
 	ForwardDynamics (*model2, Q, QDot, Tau, QDDot);
 	
+	cout << "QDDot = " << endl << QDDot << endl << endl;
+	
 	delete model1;
 	delete model2;
 	

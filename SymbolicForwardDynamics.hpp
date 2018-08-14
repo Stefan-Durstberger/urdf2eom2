@@ -40,6 +40,7 @@ using namespace std;
 static inline void jcalc ( Model &model, unsigned int joint_id );
 static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatialVector> *f_ext = NULL );
 
+Timer timer1;
 
 // State information
 /// \brief The spatial velocity of the bodies
@@ -93,7 +94,7 @@ std::vector<SymSpatialVector> sym_pA;
 /// \brief Temporary variable U_i (RBDA p. 130)
 std::vector<SymSpatialVector> sym_U;
 /// \brief Temporary variable D_i (RBDA p. 130)
-std::vector<Symbolic> sym_d;
+std::vector<Symbolic> sym_D;
 /// \brief Temporary variable u (RBDA p. 130)
 std::vector<Symbolic> sym_u;
 /// \brief Internal forces on the body (used only InverseDynamics())
@@ -158,12 +159,12 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 		sym_IA.push_back		(symSpatialMatrixIdentity);
 		sym_pA.push_back		(symSpatialVectorZero);
 		sym_U.push_back			(symSpatialVectorZero);
-		//sym_Ic.push_back		(symSRBIZero);
+		sym_a.push_back			(symSpatialVectorZero);
 	}
 	
 	for (unsigned int i = 0; i < model.mBodies.size(); i++) {
 		sym_u.push_back(symZero);
-		sym_d.push_back(symZero);
+		sym_D.push_back(symZero);
 	}
 	
 	Symbolic Tau("tau", model.dof_count);
@@ -179,7 +180,7 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 //	clog << model.U.size()  << endl;
 //	cout << "dof = " << model.dof_count << endl;
 	
-	Math::SpatialVector spatial_gravity (0., 0., 0., model.gravity[0], model.gravity[1], model.gravity[2]);
+	SymSpatialVector spatial_gravity (list<Symbolic> {symZero, symZero, symZero, Symbolic (model.gravity[0]), Symbolic (model.gravity[1]), Symbolic (model.gravity[2])} );
 	
 	unsigned int i = 0;
 	
@@ -235,8 +236,13 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 //		clog << "sym_X_lambda[" << i << "].r = " << sym_X_lambda[i].r << endl;
 //		clog << "sym_v[" << lambda << "].v = " << sym_v[lambda].v << endl;
 //		clog << "sym_v_J[" << i << "].v = " << sym_v_J[i].v << endl;
+//		clog << "sym_I[" << i << "].m = " << sym_I[i].m << endl;
+//		clog << "sym_I[" << i << "].h = " << sym_I[i].h << endl;
+//		clog << "sym_I[" << i << "].Ixx = " << sym_I[i].Ixx << endl;
+//		clog << "sym_I[" << i << "].Iyx = " << sym_I[i].Iyx << ";    Iyy = " << sym_I[i].Iyy << endl;
+//		clog << "sym_I[" << i << "].Izx = " << sym_I[i].Izx << ";    Izy = " << sym_I[i].Izy << ";    Izz = " << sym_I[i].Izz << endl;
 		
-		sym_v[i] = sym_X_lambda[i].apply( sym_v[lambda]) + sym_v_J[i];
+		sym_v[i] = sym_X_lambda[i].apply (sym_v[lambda]) + sym_v_J[i];
 		
 //		clog << "sym_v[" << i << "].v = " << sym_v[i].v << endl;
 		
@@ -245,86 +251,110 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 //		clog << "sym_c[" << i << "].v = " << sym_c[i].v << endl;
 		
 		sym_I[i].setSpatialMatrix (sym_IA[i]);
-		
-		//clog << "sym_c[" << i << "].v = " << sym_c[i].v << endl;
 
-		sym_pA[i] = crossf(sym_v[i],sym_I[i] * sym_v[i]);
+//		clog << "sym_IA[" << i << "] = " << sym_IA[i].M << std::endl;
+
+		sym_pA[i] = crossf (sym_v[i],sym_I[i] * sym_v[i]);
 		
 		if (f_ext != NULL && (*f_ext)[i] != symSpatialVectorZero) {
 			clog << "External force (" << i << ") = " << sym_X_base[i].toMatrixAdjoint() * (*f_ext)[i] << std::endl;
 			sym_pA[i] -= sym_X_base[i].toMatrixAdjoint() * (*f_ext)[i];
 		}
 		
-		//std::clog << "sym_pA[" << i << "].v = " << sym_pA[i].v << std::endl;
+//		std::clog << "sym_pA[" << i << "].v = " << sym_pA[i].v << std::endl;
 	} /* FIRST LOOP */
 	
-	cout << "sym_pA[" << i - 1 << "] = " << sym_pA[i-1].v << endl;
+	//Evaluate Model:
+	//cout << "sym_pA[" << i - 1 << "] = " << sym_pA[i-1].v << endl;
 	
 	/* SECOND LOOP */
 	for (i = static_cast<unsigned int>(model.mBodies.size()) - 1; i > 0; i--) {
 		clog << "[LOOP 2] Iteration "<< model.mBodies.size() - i << "/" << model.mBodies.size() - 1 << endl << endl;
-		unsigned int q_index = model.mJoints[i].q_index;
+		timer1.start();
 		
-		Timer timer1; timer1.start();
+		unsigned int q_index = model.mJoints[i].q_index;
 		
 		if (model.mJoints[i].mDoFCount == 1
 			&& model.mJoints[i].mJointType != JointTypeCustom) {
 			
-			clog << "sym_IA[" << i << "] = " << sym_IA[i].M << std::endl;
-			clog << "sym_S[" << i << "] = " << sym_S[i].v << std::endl;
+//			clog << "sym_S[" << i << "] = " << sym_S[i].v << std::endl;
 
 			sym_U[i] = sym_IA[i] * sym_S[i];
 			
-			clog << "sym_U[" << i << "] = " << sym_U[i].v << std::endl;
+//			clog << "sym_U[" << i << "] = " << sym_U[i].v << std::endl;
 			
-			sym_d[i] = sym_S[i].dot(sym_U[i]);
+			sym_D[i] = sym_S[i].dot(sym_U[i]);
 			sym_u[i] = Tau(q_index) - sym_S[i].dot(sym_pA[i]);
 			
-			clog << "sym_d(" << i << ") = " << sym_d[i] << endl << endl;
-			clog << "sym_u(" << i << ") = " << sym_u[i] << endl << endl;
+//			clog << "sym_D[" << i << "] = " << sym_D[i] << endl << endl;
+//			clog << "sym_u[" << i << "] = " << sym_u[i] << endl << endl;
 
 			unsigned int lambda = model.lambda[i];
 			if (lambda != 0) {
 				
-				clog << "tmp1 = " <<
-				((sym_U[i].v / sym_d[i])) << endl;
-				clog << "tmp1 = " <<
-				((sym_U[i].v / sym_d[i])) << endl;
-				clog << "tmp2 = " <<
-				((sym_U[i].v / sym_d[i]).transpose()) << endl;
-				clog << "tmp3 = " <<
-				sym_U[i].v.transpose() * (sym_U[i] / sym_d[i]).v << endl;
-				
 				SymSpatialMatrix Ia =    sym_IA[i].M
 				- (sym_U[i].v.transpose()
-				* (sym_U[i] / sym_d[i]).v);
+				* (sym_U[i] / sym_D[i]).v);
 
 				SymSpatialVector pa =  sym_pA[i]
 				+ Ia * sym_c[i]
-				+ sym_U[i] * sym_u[i] / sym_d[i];
+				+ sym_U[i] * sym_u[i] / sym_D[i];
 				
-				clog << "Ia = " << Ia.M << endl;
-				clog << "pa = " << pa.v << endl;
+//				clog << "Ia(" << i << ").M = " << Ia.M << endl;
+//				clog << "pa(" << i << ").v = " << pa.v << endl;
 				
-				SymSpatialMatrix tmp = sym_X_lambda[i].toMatrixTranspose();
-				cout << sym_X_lambda[i].E << endl;
-				cout << sym_X_lambda[i].r << endl;
-				//cout << tmp.M << endl;
+				clog << "sym_X_lambda[" << i << "].E = " << sym_X_lambda[i].E << endl;
+				clog << "sym_X_lambda[" << i << "].r = " << sym_X_lambda[i].r << endl;
 				
 				sym_IA[lambda]
 				+= sym_X_lambda[i].toMatrixTranspose()
 				* (Ia * sym_X_lambda[i].toMatrix());
-
+				
+				clog << "sym_IA_2[" << lambda << "] = " << sym_IA[lambda].M << std::endl;
+				
 				sym_pA[lambda] += sym_X_lambda[i].applyTranspose(pa);
 
-				clog << "pA[" << lambda << "] = "
-				<< sym_pA[lambda] << std::endl;
+				clog << "sym_pA_2(" << lambda << ") = " << sym_pA[lambda] << std::endl;
 				
 				timer1.stop();
 			}
-
-		} /* if (model.mJoints[i].mDoFCount == 1 */
+		} else {
+			std::cerr << "Error: invalid joint type " << model.mJoints[i].mJointType << " at id " << i << std::endl;
+			abort();
+		} /* if (model.mJoints[i].mDoFCount == 1) */
 	} /* SECOND LOOP */
+	
+	
+	sym_a[0] = spatial_gravity * Symbolic(-1.0);
+	
+	Symbolic QDDot("QDDot", model.dof_count);
+	
+	/* THIRD LOOP */
+	for (i = 1; i < model.mBodies.size(); i++) {
+		clog << "[LOOP 3] Iteration "<< i << "/" << model.mBodies.size() - 1 << endl << endl;
+		timer1.start();
+		
+		unsigned int q_index = model.mJoints[i].q_index;
+		unsigned int lambda = model.lambda[i];
+		SymSpatialTransform X_lambda = sym_X_lambda[i];
+		
+//		clog << "sym_a[lambda] = " << sym_a[lambda].v << endl;
+
+		sym_a[i] = X_lambda.apply(sym_a[lambda]) + sym_c[i];
+//		clog << "a'[" << i << "] = " << sym_a[i].v << std::endl;
+
+		if (model.mJoints[i].mDoFCount == 1
+			&& model.mJoints[i].mJointType != JointTypeCustom) {
+			QDDot(q_index) = (symOne/sym_D[i]) * (sym_u[i] - sym_U[i].dot(sym_a[i]));
+			sym_a[i] = sym_a[i] + sym_S[i] * QDDot(q_index);
+		} else {
+			std::cerr << "Error: invalid joint type " << model.mJoints[i].mJointType << " at id " << i << std::endl;
+			abort();
+		}
+		
+//		clog << "QDDot(" << q_index << ") = " << QDDot(q_index) << endl;
+		timer1.stop();
+	} /* THIRD LOOP */
 }
 
 
@@ -358,7 +388,7 @@ static inline void jcalc ( Model &model, unsigned int joint_id ) {
 	} else {
 		std::cerr << "Error: invalid joint type " << model.mJoints[joint_id].mJointType << " at id " << joint_id << std::endl;
 		abort();
-	}
+	} /* if (model.mJoints[joint_id].mJointType == JointTypeRevoluteX) */
 	sym_X_lambda[joint_id] = sym_X_J[joint_id] * SpatialTrans2SymSpatialTrans(model.X_T[joint_id]);
 }
 
