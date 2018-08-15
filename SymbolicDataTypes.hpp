@@ -299,17 +299,17 @@ struct SymSpatialTransform {
 	 */
 	SymSpatialVector applyTranspose (const SymSpatialVector &f_sp) {
 		Symbolic E_T_f (list<Symbolic> {
-						E(0,0) * f_sp[3] + E(1,0) * f_sp[4] + E(2,0) * f_sp[5],
-						E(0,1) * f_sp[3] + E(1,1) * f_sp[4] + E(2,1) * f_sp[5],
-						E(0,2) * f_sp[3] + E(1,2) * f_sp[4] + E(2,2) * f_sp[5]});
-
+						E(0,0) * f_sp.v(3) + E(1,0) * f_sp.v(4) + E(2,0) * f_sp.v(5),
+						E(0,1) * f_sp.v(3) + E(1,1) * f_sp.v(4) + E(2,1) * f_sp.v(5),
+						E(0,2) * f_sp.v(3) + E(1,2) * f_sp.v(4) + E(2,2) * f_sp.v(5)});
+		//		clog << "E_T_f = " << E_T_f << endl;
 		return SymSpatialVector (Symbolic( list<Symbolic> {
-							E(0,0) * f_sp[0] + E(1,0) * f_sp[1] + E(2,0) * f_sp[2] - r[2] * E_T_f[1] + r[1] * E_T_f[2],
-							E(0,1) * f_sp[0] + E(1,1) * f_sp[1] + E(2,1) * f_sp[2] + r[2] * E_T_f[0] - r[0] * E_T_f[2],
-							E(0,2) * f_sp[0] + E(1,2) * f_sp[1] + E(2,2) * f_sp[2] - r[1] * E_T_f[0] + r[0] * E_T_f[1],
-							E_T_f [0],
-							E_T_f [1],
-							E_T_f [2]}));
+							E(0,0) * f_sp.v(0) + E(1,0) * f_sp.v(1) + E(2,0) * f_sp.v(2) - r(2) * E_T_f(1) + r(1) * E_T_f(2),
+							E(0,1) * f_sp.v(0) + E(1,1) * f_sp.v(1) + E(2,1) * f_sp.v(2) + r(2) * E_T_f(0) - r(0) * E_T_f(2),
+							E(0,2) * f_sp.v(0) + E(1,2) * f_sp.v(1) + E(2,2) * f_sp.v(2) - r(1) * E_T_f(0) + r(0) * E_T_f(1),
+							E_T_f (0),
+							E_T_f (1),
+							E_T_f (2)}));
 	};
 	
 //	/** Same as X^* I X^{-1}
@@ -362,10 +362,10 @@ struct SymSpatialTransform {
 	
 	SymSpatialMatrix toMatrix () const {
 		Symbolic _Erx =
-		E * list<list<Symbolic>> {
-			{symZero, -r[2], r[1]},
-			{r[2], symZero, -r[0]},
-			{-r[1], r[0], symZero}};
+		E * Symbolic (list<list<Symbolic>> {
+			{symZero, -r(2), r(1)},
+			{r(2), symZero, -r(0)},
+			{-r(1), r(0), symZero}});
 		SymSpatialMatrix result;
 		// left top = E
 		for (unsigned int i = 0; i < 3; i++) //Column
@@ -388,10 +388,10 @@ struct SymSpatialTransform {
 	
 	SymSpatialMatrix toMatrixAdjoint () const {
 		Symbolic _Erx =
-		E * list<list<Symbolic>> {
+		E * Symbolic (list<list<Symbolic>> {
 			{symZero, -r(2), r(1)},
 			{r(2), symZero, -r(0)},
-			{-r(1), r(0), symZero}};
+			{-r(1), r(0), symZero}});
 		SymSpatialMatrix result;
 		// left top = E
 		for (unsigned int i = 0; i < 3; i++)

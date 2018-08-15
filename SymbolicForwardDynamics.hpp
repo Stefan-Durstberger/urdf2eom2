@@ -280,14 +280,15 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 //			clog << "sym_S[" << i << "] = " << sym_S[i].v << std::endl;
 
 			sym_U[i] = sym_IA[i] * sym_S[i];
-			
-//			clog << "sym_U[" << i << "] = " << sym_U[i].v << std::endl;
+			timer1.lap("After U = ");
+			clog << "sym_U[" << i << "] = " << sym_U[i].v << std::endl;
 			
 			sym_D[i] = sym_S[i].dot(sym_U[i]);
+			timer1.lap("After D = ");
 			sym_u[i] = Tau(q_index) - sym_S[i].dot(sym_pA[i]);
-			
-//			clog << "sym_D[" << i << "] = " << sym_D[i] << endl << endl;
-//			clog << "sym_u[" << i << "] = " << sym_u[i] << endl << endl;
+			timer1.lap("After u = ");
+			clog << "sym_D[" << i << "] = " << sym_D[i] << endl << endl;
+			clog << "sym_u[" << i << "] = " << sym_u[i] << endl << endl;
 
 			unsigned int lambda = model.lambda[i];
 			if (lambda != 0) {
@@ -295,26 +296,34 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 				SymSpatialMatrix Ia =    sym_IA[i].M
 				- (sym_U[i].v.transpose()
 				* (sym_U[i] / sym_D[i]).v);
-
+				timer1.lap("After Ia = ");
+				
 				SymSpatialVector pa =  sym_pA[i]
 				+ Ia * sym_c[i]
-				+ sym_U[i] * sym_u[i] / sym_D[i];
-				
+				+ (sym_U[i] * sym_u[i] / sym_D[i]);
+				timer1.lap("After pa = ");
 //				clog << "Ia(" << i << ").M = " << Ia.M << endl;
 //				clog << "pa(" << i << ").v = " << pa.v << endl;
 				
-				clog << "sym_X_lambda[" << i << "].E = " << sym_X_lambda[i].E << endl;
-				clog << "sym_X_lambda[" << i << "].r = " << sym_X_lambda[i].r << endl;
+//				clog << "sym_IA[" << lambda << "] = " << sym_IA[lambda].M << endl;
+//				clog << "sym_X_lambda[" << i << "].toMatrixTranspose = " << (sym_X_lambda[i].toMatrixTranspose()).M << endl;
+//				clog << "sym_X_lambda[" << i << "].toMatrix = " << (sym_X_lambda[i].toMatrix()).M << endl;
+//				clog << "Ia * sym_X_lambda[" << i << "].toMatrix = " << (Ia * sym_X_lambda[i].toMatrix()).M << endl;
+//				clog << "sym_X_lambda[i].toMatrixTranspose() * (Ia * sym_X_lambda[i].toMatrix()) = "
+//					 << (sym_X_lambda[i].toMatrixTranspose() * (Ia * sym_X_lambda[i].toMatrix())).M << endl;
 				
-				sym_IA[lambda]
-				+= sym_X_lambda[i].toMatrixTranspose()
-				* (Ia * sym_X_lambda[i].toMatrix());
+				sym_IA[lambda].M
+				= sym_IA[lambda].M + (sym_X_lambda[i].toMatrixTranspose()
+				* (Ia * sym_X_lambda[i].toMatrix())).M;
+				timer1.lap("After IA = ");
+//				clog << "sym_IA_2[" << lambda << "] = " << sym_IA[lambda].M << std::endl;
 				
-				clog << "sym_IA_2[" << lambda << "] = " << sym_IA[lambda].M << std::endl;
+//				clog << "sym_pA_2[" << lambda << "] = " << sym_pA[lambda].v << std::endl;
+//				clog << "(sym_X_lambda[i].applyTranspose(pa)).v = " << (sym_X_lambda[i].applyTranspose(pa)).v << std::endl;
 				
-				sym_pA[lambda] += sym_X_lambda[i].applyTranspose(pa);
-
-				clog << "sym_pA_2(" << lambda << ") = " << sym_pA[lambda] << std::endl;
+				sym_pA[lambda].v = sym_pA[lambda].v + (sym_X_lambda[i].applyTranspose(pa)).v;
+				timer1.lap("After pA = ");
+//				clog << "sym_pA_2[" << lambda << "] = " << sym_pA[lambda].v << std::endl;
 				
 				timer1.stop();
 			}
@@ -352,7 +361,7 @@ static inline void SymbolicForwardDynamics ( Model &model, std::vector<SymSpatia
 			abort();
 		}
 		
-//		clog << "QDDot(" << q_index << ") = " << QDDot(q_index) << endl;
+		clog << "QDDot(" << q_index << ") = " << QDDot(q_index) << endl;
 		timer1.stop();
 	} /* THIRD LOOP */
 }

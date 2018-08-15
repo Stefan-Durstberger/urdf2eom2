@@ -32,7 +32,17 @@ void Timer::lap (void){
 	std::chrono::duration<double> elapsed = laptime2 - laptime1;
 	
 	std::ostringstream oss;
-	oss << "[TIMER " << timerNumber << "]  Lap = "<< elapsed.count() << std::endl << std::endl;
+	oss << "[TIMER " << timerNumber << "]  Lap = " << elapsed.count() << std::endl << std::endl;
+	output (oss);
+	
+	laptime1 = laptime2;
+};
+void Timer::lap (const std::string& input){
+	laptime2 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = laptime2 - laptime1;
+	
+	std::ostringstream oss;
+	oss << "[TIMER " << timerNumber << "]  " << input << elapsed.count() << std::endl << std::endl;
 	output (oss);
 	
 	laptime1 = laptime2;

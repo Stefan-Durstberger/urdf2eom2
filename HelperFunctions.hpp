@@ -34,6 +34,7 @@ public:
 	Timer(bool timOff);
 	void start (void);
 	void lap (void);
+	void lap (const std::string& input);
 	void stop (void);
 	void OFF (void);
 	void ON (void);
